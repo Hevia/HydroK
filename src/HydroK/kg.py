@@ -3,8 +3,14 @@ from typing import Dict, List, Tuple
 
 class KG:
     def __init__(self) -> None:
-        edges: Dict[str, List[str]] = {}
-        nodes: Dict[str, Node] = {}
+        self.edges: Dict[str, List[str]] = {}
+        self.nodes: Dict[str, Node] = {}
+
+    def __str__(self):
+        return f'Nodes: {self.nodes} Edges: {self.edges}'
+
+    def __repr__(self):
+        return f'KG(Nodes:\'{self.edges}\', Edges:{self.edges})'
 
     def from_csv(self, path: str) -> None:
         pass
@@ -18,24 +24,34 @@ class KG:
     def to_text(self) -> str:
         pass
 
-    def add_node(self, node: Node | str) -> None:
+    # TODO: Node | str
+    def add_node(self, node) -> None:
         # Check to see if it exists already, if so raise an exception
         if isinstance(node, str):
             insert_node = Node(node)
         else:
             insert_node = node
 
-            if insert_node.name in self.nodes:
-                raise Exception(f"Node {insert_node.name} already exists in the graph")
-            else:
-                self.nodes[insert_node.name] = insert_node
+        if insert_node.name in self.nodes:
+            raise Exception(f"Node {insert_node.name} already exists in the graph")
+        else:
+            self.nodes[insert_node.name] = insert_node
 
-    def add_edge(self, head_ref: Node | str, tail: Node | str) -> None:
+    def add_edge(self, head, tail) -> None:
         # Check to see if the head and tail nodes exist, if not raise an exception
-        if isinstance(head_ref, Node):
-            head_ref = head_ref.name
+        if isinstance(head, Node):
+            head_ref = head.name
+        elif isinstance(head, str):
+            head_ref = head
+        else:
+            raise Exception(f"Invalid type for head: {type(head)}")
+        
         if isinstance(tail, Node):
             tail_ref = tail.name
+        elif isinstance(tail, str):
+            tail_ref = tail
+        else:
+            raise Exception(f"Invalid type for tail: {type(tail)}")
 
         if head_ref not in self.nodes:
             raise Exception(f"Node {head_ref} does not exist in the graph")
@@ -61,7 +77,7 @@ class KG:
                 edges.append((self.nodes[head], self.nodes[tail]))
         return edges
     
-    def get_node(self, name: Node | str) -> Node:
+    def get_node(self, name) -> Node:
         if isinstance(name, Node):
             name_ref = name.name
 
@@ -69,7 +85,7 @@ class KG:
             raise Exception(f"Node {name_ref} does not exist in the graph")
         return self.nodes[name_ref]
 
-    def get_edge(self, head: Node | str, tail: Node | str) -> Tuple[Node, Node]:
+    def get_edge(self, head, tail) -> Tuple[Node, Node]:
         if isinstance(head, Node):
             head_ref = head.name
         if isinstance(tail, Node):
